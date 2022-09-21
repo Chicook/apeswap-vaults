@@ -309,6 +309,16 @@ describe('KeeperMaximizerVaultApe', function () {
         expect(userInfo.stake.toString()).equal(toDeposit)
       });
 
+      it('should depositTo and have shares, and withdraw from other wallet', async () => {
+        await maximizerVaultApe.depositTo(0, testerAddress2, toDeposit, { from: testerAddress })
+        const userInfo = await maximizerVaultApe.userInfo(0, testerAddress2);
+        expect(userInfo.stake.toString()).equal(toDeposit)
+
+        await maximizerVaultApe.withdraw(0, toDeposit, { from: testerAddress2 })
+        userInfo = await maximizerVaultApe.userInfo(0, testerAddress2);
+        expect(Number(userInfo.stake)).equal(0, 'user stake is not zero after withdraw')
+      });
+
       it('should withdraw and pay withdraw fee', async () => {
         const { platform } = await strategyMaximizerMasterApe.getSettings();
         const wantAccountSnapshotBefore = await getAccountTokenBalances(wantToken, [testerAddress, adminAddress, platform]);

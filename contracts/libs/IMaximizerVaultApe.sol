@@ -39,6 +39,8 @@ interface IMaximizerVaultApe {
             uint256 lastDepositedTime
         );
 
+    function vaults(uint256 _pid) external view returns (address);
+
     function vaultsLength() external view returns (uint256);
 
     function addVault(address _strat) external;
@@ -47,6 +49,12 @@ interface IMaximizerVaultApe {
         external
         view
         returns (uint256);
+
+    function depositTo(
+        uint256 _pid,
+        address _to,
+        uint256 _wantAmt
+    ) external;
 
     function deposit(uint256 _pid, uint256 _wantAmt) external;
 
