@@ -416,6 +416,18 @@ contract MaximizerVaultApe is
         return strat.accSharesPerStakedToken();
     }
 
+    /// @notice User deposit for specific vault for other user
+    /// @param _pid pid of vault
+    /// @param _user user address depositing for
+    /// @param _wantAmt amount of tokens to deposit
+    function depositTo(
+        uint256 _pid,
+        address _user,
+        uint256 _wantAmt
+    ) external override nonReentrant {
+        _depositTo(_pid, _user, _wantAmt);
+    }
+
     /// @notice User deposit for specific vault
     /// @param _pid pid of vault
     /// @param _wantAmt amount of tokens to deposit
@@ -424,6 +436,14 @@ contract MaximizerVaultApe is
         override
         nonReentrant
     {
+        _depositTo(_pid, msg.sender, _wantAmt);
+    }
+
+    function _depositTo(
+        uint256 _pid,
+        address _user,
+        uint256 _wantAmt
+    ) internal {
         address vaultAddress = vaults[_pid];
         VaultInfo storage vaultInfo = vaultInfos[vaultAddress];
         require(vaultInfo.enabled, "MaximizerVaultApe: vault is disabled");
@@ -438,7 +458,7 @@ contract MaximizerVaultApe is
         wantToken.safeTransferFrom(msg.sender, address(strat), _wantAmt);
         uint256 afterWantToken = wantToken.balanceOf(address(strat));
         // account for reflect fees
-        strat.deposit(msg.sender, afterWantToken - beforeWantToken);
+        strat.deposit(_user, afterWantToken - beforeWantToken);
     }
 
     /// @notice User withdraw for specific vault
